@@ -51,6 +51,11 @@ static void prv_pin_complete_handler(Pin pin, void *context) {
 // === App lifecycle ==========================================================
 
 static void prv_init(void) {
+#ifdef TOUCH_NAVIGATION_SUPPORTED
+  // Restore the user's app-wide touch navigation preference.
+  app_touch_navigation_enable(storage_is_touch_enabled());
+#endif
+
 #ifdef DEBUG
   APP_LOG(APP_LOG_LEVEL_WARNING, "========================================");
   APP_LOG(APP_LOG_LEVEL_WARNING, "DEBUG MODE IS ENABLED!");

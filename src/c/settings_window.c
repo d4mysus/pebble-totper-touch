@@ -8,7 +8,12 @@
 #define MENU_ROW_PIN_ACTION 0
 #define MENU_ROW_STATUSBAR_TOGGLE 1
 #define MENU_ROW_TOVIBRATE_TOGGLE 2
+#ifdef TOUCH_NAVIGATION_SUPPORTED
+#define MENU_ROW_TOUCH_TOGGLE 3
+#define MENU_ROW_SYSTEM_INFO 4
+#else
 #define MENU_ROW_SYSTEM_INFO 3
+#endif
 
 typedef enum {
   PIN_MODE_NONE,
@@ -120,7 +125,7 @@ static uint16_t prv_menu_get_num_sections_callback(MenuLayer *menu_layer, void *
 }
 
 static uint16_t prv_menu_get_num_rows_callback(MenuLayer *menu_layer, uint16_t section_index, void *data) {
-  return 4;  // PIN action, Status Bar toggle, Timeout Vibrate toggle, System Info
+  return MENU_ROW_SYSTEM_INFO + 1;
 }
 
 static int16_t prv_menu_get_header_height_callback(MenuLayer *menu_layer, uint16_t section_index, void *data) {
@@ -155,6 +160,13 @@ static void prv_menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, M
                           tovibrate_enabled ? "Enabled" : "Disabled", NULL);
       break;
       
+#ifdef TOUCH_NAVIGATION_SUPPORTED
+    case MENU_ROW_TOUCH_TOGGLE:
+      menu_cell_basic_draw(ctx, cell_layer, "Touch scrolling",
+                          storage_is_touch_enabled() ? "Enabled" : "Disabled", NULL);
+      break;
+#endif
+
     case MENU_ROW_SYSTEM_INFO:
       menu_cell_basic_draw(ctx, cell_layer, "System Info", "Version & Memory", NULL);
       break;
@@ -225,6 +237,15 @@ static void prv_menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_inde
     }
     break;
       
+#ifdef TOUCH_NAVIGATION_SUPPORTED
+    case MENU_ROW_TOUCH_TOGGLE:
+      storage_set_touch_enabled(!storage_is_touch_enabled());
+      app_touch_navigation_enable(storage_is_touch_enabled());
+      menu_layer_reload_data(menu_layer);
+      vibes_short_pulse();
+      break;
+#endif
+
     case MENU_ROW_SYSTEM_INFO:
       // Create and show system info window
       if (!settings->info_window) {

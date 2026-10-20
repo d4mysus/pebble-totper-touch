@@ -79,8 +79,26 @@ TOTPer should not be your only authenticator. Why? I cannot take responsibility 
 2. Use UP/DOWN buttons to scroll through accounts
 3. Press SELECT to open the settings window
 
+On touchscreen watches (Pebble Time 2 and Pebble Round 2), you can also swipe to
+scroll through accounts and the settings menu. Tapping an account does not open
+settings; use the physical SELECT button to open settings. Once there, you can
+tap settings rows to select them.
+Enable touch in the watch's **Settings → Display → Touch**, and wake the watch
+with a button or wrist gesture before navigating by touch. Button controls remain
+available on every model.
+
+Touch navigation uses Pebble's built-in menu support. Build with **SDK 4.33.1 or
+newer**, and use **firmware 4.33.2 or newer**, which fixes a crash in third-party
+touch-enabled apps. Older SDKs without the touch-navigation API build with button
+controls only. See the [Pebble touch guide](https://developer.repebble.com/guides/events-and-services/touch/)
+and [SDK 4.33.1 release notes](https://developer.repebble.com/sdk/changelogs/4.33.1/).
+
 ### Settings
 
+- **Touch scrolling** (touchscreen watches): Toggle touch navigation for TOTPer.
+  Enabled by default; changes apply immediately and are saved between launches.
+  When disabled, use the buttons to navigate and turn it back on. The watch's
+  system Touch setting must also be enabled to use touch navigation.
 - **Set PIN / Disable PIN**: 
   - If no PIN is set: Enter a new PIN twice to confirm
   - If PIN is set: Enter the current PIN to disable it

@@ -6,7 +6,7 @@
 #include <string.h>
 
 // Forward declarations
-static void prv_menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data);
+static void prv_select_click_handler(ClickRecognizerRef recognizer, void *context);
 
 // UI global variables
 Window *s_window;
@@ -18,6 +18,21 @@ AccountCache *s_account_cache;
 static bool s_is_loading = false;
 static bool s_out_of_memory = false;
 static SettingsWindow *s_settings_window = NULL;
+static ClickConfigProvider s_menu_click_config_provider;
+static void *s_menu_click_context;
+
+static void prv_click_config_provider(void *context) {
+  // Keep MenuLayer's normal Up/Down controls, then add a button-only action.
+  s_menu_click_config_provider(s_menu_click_context);
+  window_single_click_subscribe(BUTTON_ID_SELECT, prv_select_click_handler);
+}
+
+static void prv_set_click_config_onto_window(Window *window) {
+  menu_layer_set_click_config_onto_window(s_menu_layer, window);
+  s_menu_click_config_provider = window_get_click_config_provider(window);
+  s_menu_click_context = window_get_click_config_context(window);
+  window_set_click_config_provider(window, prv_click_config_provider);
+}
 
 // ============================================================================
 // Account loading and caching
@@ -359,13 +374,13 @@ void ui_reload_window(void) {
     .get_num_rows = prv_menu_get_num_rows_callback,
     .get_cell_height = prv_menu_get_cell_height_callback,
     .draw_row = prv_menu_draw_row_callback,
-    .select_click = prv_menu_select_callback,
+    // No select_click: touching an account must not open settings.
   });
   
   // Disable highlight by making it the same color as background
   menu_layer_set_highlight_colors(s_menu_layer, GColorWhite, GColorBlack);
   
-  menu_layer_set_click_config_onto_window(s_menu_layer, s_window);
+  prv_set_click_config_onto_window(s_window);
   
   layer_add_child(window_layer, menu_layer_get_layer(s_menu_layer));
   
@@ -385,8 +400,8 @@ void ui_reload_window(void) {
 // Menu callbacks
 // ============================================================================
 
-static void prv_menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
-  // Open settings window on any menu item click
+static void prv_select_click_handler(ClickRecognizerRef recognizer, void *context) {
+  // Open settings with Select, independently of menu row activation by touch.
   if (!s_settings_window) {
     s_settings_window = settings_window_create();
   }
@@ -428,13 +443,13 @@ static void prv_window_load(Window *window) {
     .get_num_rows = prv_menu_get_num_rows_callback,
     .get_cell_height = prv_menu_get_cell_height_callback,
     .draw_row = prv_menu_draw_row_callback,
-    .select_click = prv_menu_select_callback,
+    // No select_click: touching an account must not open settings.
   });
   
   // Disable highlight by making it the same color as background
   menu_layer_set_highlight_colors(s_menu_layer, GColorWhite, GColorBlack);
   
-  menu_layer_set_click_config_onto_window(s_menu_layer, window);
+  prv_set_click_config_onto_window(window);
   
   layer_add_child(window_layer, menu_layer_get_layer(s_menu_layer));
   

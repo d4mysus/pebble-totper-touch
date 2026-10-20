@@ -261,3 +261,15 @@ void storage_set_tovibrate_enabled(bool enabled) {
   persist_write_bool(PERSIST_KEY_TOVIBRATE_ENABLED, enabled);
 }
 
+// Touch navigation preference
+bool storage_is_touch_enabled(void) {
+  if (!persist_exists(PERSIST_KEY_TOUCH_ENABLED)) {
+    return true;
+  }
+  return persist_read_bool(PERSIST_KEY_TOUCH_ENABLED);
+}
+
+void storage_set_touch_enabled(bool enabled) {
+  persist_write_bool(PERSIST_KEY_TOUCH_ENABLED, enabled);
+}
+

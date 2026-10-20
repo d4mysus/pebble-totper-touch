@@ -6,6 +6,7 @@
 #define PERSIST_KEY_PIN_HASH 2
 #define PERSIST_KEY_STATUSBAR_ENABLED 3
 #define PERSIST_KEY_TOVIBRATE_ENABLED 4
+#define PERSIST_KEY_TOUCH_ENABLED 5
 #define PERSIST_KEY_ACCOUNTS_START 8
 
 // Get account count
@@ -43,3 +44,7 @@ void storage_set_statusbar_enabled(bool enabled);
 // Timeout Vibrate managment
 bool storage_is_tovibrate_enabled(void);
 void storage_set_tovibrate_enabled(bool enabled);
+
+// Touch navigation preference (enabled by default)
+bool storage_is_touch_enabled(void);
+void storage_set_touch_enabled(bool enabled);
